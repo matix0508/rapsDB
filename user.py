@@ -1,4 +1,5 @@
-from DB import DataBase, Table
+from DB import DataBase, Table, DEBUG
+
 
 def try_connecting():
     i = 0
@@ -46,11 +47,19 @@ class User:
         else:
             return False
 
+    def display(self):
+        print(f"ID::{self.id}")
+        print(f"Login::{self.login}")
+        print(f"FirstName::{self.firstName}")
+        print(f"LastName::{self.lastName}")
+        print("*" * len(self.password))
+
     def save(self):
         budget = try_connecting()
         budget.db_connect()
         create_users(budget)
-        print(budget.tables)
+        if DEBUG:
+            print(budget.tables)
         # budget.close()
         #
         budget.sql("SELECT login FROM users")
@@ -61,7 +70,7 @@ class User:
                     (self.firstName, self.lastName, self.login, self.password, self.privileges),
                     ("firstname", "lastname", "login", "password", "privileges")
                 )
-                 print("sth")
+                 # print("sth")
             else:
                 budget.sql(f"""UPDATE users
                                 SET
@@ -83,3 +92,9 @@ class User:
                 pass
 
         budget.close()
+
+    def remove(self):
+        db = try_connecting()
+        db.db_connect()
+        db.sql(f"DELETE FROM users WHERE login = '{self.login}'")
+        db.connection.commit()

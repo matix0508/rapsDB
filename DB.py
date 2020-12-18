@@ -1,12 +1,15 @@
 from mysql.connector import connect
 import pandas as pd
 
+DEBUG = False
+
 
 
 class Column:
     def __init__(self, name):
         self.name = name
-        print(f"[INFO]:: adding new column {self.name}")
+        if DEBUG:
+            print(f"[INFO]:: adding new column {self.name}")
 
     def __repr__(self):
         return self.name
@@ -55,8 +58,8 @@ class DataBase:
         """
         starts connection with database
         """
-
-        print(f"[INFO]:: Conecting to database {self.name}...")
+        if DEBUG:
+            print(f"[INFO]:: Conecting to database {self.name}...")
 
         self.connection = connect(
             host = self.host,
@@ -67,13 +70,15 @@ class DataBase:
         self.cursor = self.connection.cursor()
         self.connected = True
 
-        print("[INFO]:: Success!")
+        if DEBUG:
+            print("[INFO]:: Success!")
 
     def close(self, save_changes=True):
         """
         closes connection with database
         """
-        print("\n[INFO]:: Closing Connection...")
+        if DEBUG:
+            print("\n[INFO]:: Closing Connection...")
         if save_changes:
             self.connection.commit()
 
@@ -82,7 +87,9 @@ class DataBase:
         self.cursor = None
         self.connection = None
         self.connected = False
-        print("[INFO]:: Success!")
+
+        if DEBUG:
+            print("[INFO]:: Success!")
 
 
     def save_credentials(self):
@@ -174,9 +181,11 @@ class DataBase:
                 self.sql(sql)
                 self.get_table_names()
             except:
-                print("not created")
+                pass
+                # print("not created")
         else:
-            print("Table already exists")
+            if DEBUG:
+                print("Table already exists")
 
 
     def get_table_names(self):
@@ -224,7 +233,8 @@ class DataBase:
 
                 col_names = (self.cursor.fetchall() )
 
-                print(f"\n[INFO]:: Column names in {table}: " + str(col_names))
+                if DEBUG:
+                    print(f"\n[INFO]:: Column names in {table}: " + str(col_names))
 
                 for col_name in col_names:
                     table.columns.append(Column(col_name[0]))
